@@ -13,5 +13,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".TwoActivity">
+            <intent-filter>
+                <action android:name="main.activity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <service android:name=".StartAppServer"/>
     </application>
 </manifest>

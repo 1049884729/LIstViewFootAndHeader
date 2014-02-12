@@ -1,11 +1,10 @@
 package com.example.ListViewFoot;
 
 import android.app.Activity;
-import android.app.Service;
 import android.content.*;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import com.example.ListViewFoot.sercices.StartAppServer;
 
 public class MyActivity extends Activity {
     private EnterToTwoActivtyNotify broadcast;

@@ -1,4 +1,4 @@
-package com.example.ListViewFoot;
+package com.example.ListViewFoot.sercices;
 
 import android.app.Service;
 import android.content.Intent;
@@ -19,7 +19,7 @@ public class StartAppServer extends Service {
 
         return new MyIBinder();
     }
-    class  MyIBinder extends Binder {
+    public class  MyIBinder extends Binder {
         public void startIntent(){
             Intent i=new Intent();
             i.setAction("entry.to.main.broad");

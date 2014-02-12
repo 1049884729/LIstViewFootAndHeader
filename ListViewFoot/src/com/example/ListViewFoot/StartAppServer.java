@@ -25,16 +25,24 @@ public class StartAppServer extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+       new initThread().start();
+    }
+class  initThread extends Thread{
+    @Override
+    public void run() {
+        super.run();
         try {
-            Thread.sleep(3000);
+            Thread.sleep(8000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
+}
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        Intent i=new Intent();
+        i.setAction("entry.to.main.broad");
+        getApplicationContext().sendBroadcast(i);
         return super.onStartCommand(intent, flags, startId);
 
     }

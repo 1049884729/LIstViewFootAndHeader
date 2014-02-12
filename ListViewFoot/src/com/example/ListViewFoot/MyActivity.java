@@ -3,6 +3,7 @@ package com.example.ListViewFoot;
 import android.app.Activity;
 import android.app.Service;
 import android.content.*;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -17,15 +18,16 @@ public class MyActivity extends Activity {
         setContentView(R.layout.main);
         broadcast=new EnterToTwoActivtyNotify();
 
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
                 System.out.print(false);
-                Intent intent=new Intent();
-                intent.setClass(MyActivity.this,StartAppServer.class);
+                Intent intent = new Intent();
+                intent.setClass(MyActivity.this, StartAppServer.class);
                 startService(intent);
-                bindService(intent,conn, Service.BIND_AUTO_CREATE);
+                bindService(intent, conn, Service.BIND_AUTO_CREATE);
             }
         });
 
@@ -41,7 +43,7 @@ public class MyActivity extends Activity {
         Intent intent=new Intent();
         intent.setClass(MyActivity.this,StartAppServer.class);
 
-        bindService(intent,conn, Service.BIND_AUTO_CREATE);
+        //bindService(intent,conn, Service.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -49,16 +51,41 @@ public class MyActivity extends Activity {
         super.onPause();
         unregisterReceiver(broadcast);
 
-        unbindService(conn);
+       // unbindService(conn);
     }
 
     class EnterToTwoActivtyNotify extends BroadcastReceiver{
 
+        private Context context;
+        private  Intent intent;
          @Override
          public void onReceive(Context context, Intent intent) {
-             intent.setAction("main.activity");
-             context.startActivity(intent);
+             this.context=context;
+             this. intent=intent;
+             new AsyncMain().execute();
+
+
          }
+        class AsyncMain extends AsyncTask<Object,Integer,Object>{
+
+            @Override
+            protected Object doInBackground(Object... objects) {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                intent.setAction("main.activity");
+                context.startActivity(intent);
+                finish();
+            }
+        }
      }
     private ServiceConnection conn=new ServiceConnection() {
         @Override

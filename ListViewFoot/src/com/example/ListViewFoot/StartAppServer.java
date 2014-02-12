@@ -2,13 +2,12 @@ package com.example.ListViewFoot;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.IntentFilter;
+
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
-import java.util.logging.Logger;
 
 /**
  * Created by xff on 14-2-12.

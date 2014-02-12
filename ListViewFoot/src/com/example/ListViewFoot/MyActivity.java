@@ -18,18 +18,14 @@ public class MyActivity extends Activity {
         setContentView(R.layout.main);
         broadcast=new EnterToTwoActivtyNotify();
 
+        IntentFilter broadIntent=new IntentFilter();
+        broadIntent.addAction("entry.to.main.broad");
+        registerReceiver(broadcast, broadIntent);
+        Intent intent=new Intent();
+        intent.setClass(MyActivity.this,StartAppServer.class);
+        startService(intent);
+        System.out.print(false);
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                System.out.print(false);
-                Intent intent = new Intent();
-                intent.setClass(MyActivity.this, StartAppServer.class);
-                startService(intent);
-                bindService(intent, conn, Service.BIND_AUTO_CREATE);
-            }
-        });
 
     }
 
@@ -38,11 +34,7 @@ public class MyActivity extends Activity {
     protected void onResume() {
         super.onResume();
         //广播一次注册的问题
-        IntentFilter broadIntent=new IntentFilter();
-        broadIntent.addAction("entry.to.main.broad");
-        registerReceiver(broadcast, broadIntent);
-        Intent intent=new Intent();
-        intent.setClass(MyActivity.this,StartAppServer.class);
+
 
         //bindService(intent,conn, Service.BIND_AUTO_CREATE);
     }
@@ -50,43 +42,28 @@ public class MyActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(broadcast);
+        try {
+            unregisterReceiver(broadcast);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-       // unbindService(conn);
+        // unbindService(conn);
     }
 
     class EnterToTwoActivtyNotify extends BroadcastReceiver{
 
-        private Context context;
-        private  Intent intent;
+
          @Override
          public void onReceive(Context context, Intent intent) {
-             this.context=context;
-             this. intent=intent;
-             new AsyncMain().execute();
+
+             intent.setAction("main.activity");
+             context.startActivity(intent);
+             finish();
 
 
          }
-        class AsyncMain extends AsyncTask<Object,Integer,Object>{
 
-            @Override
-            protected Object doInBackground(Object... objects) {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                intent.setAction("main.activity");
-                context.startActivity(intent);
-                finish();
-            }
-        }
      }
     private ServiceConnection conn=new ServiceConnection() {
         @Override

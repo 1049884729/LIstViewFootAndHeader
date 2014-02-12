@@ -20,6 +20,7 @@ public class TwoActivity extends Activity {
             Intent intent=new Intent();
             intent.setClass(TwoActivity.this,StartAppServer.class);
             stopService(intent);
+
         }
         return super.onKeyDown(keyCode, event);
     }

@@ -37,6 +37,7 @@ public class MyActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        //广播一次注册的问题
         IntentFilter broadIntent=new IntentFilter();
         broadIntent.addAction("entry.to.main.broad");
         registerReceiver(broadcast, broadIntent);

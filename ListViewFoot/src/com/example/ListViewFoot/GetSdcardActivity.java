@@ -21,7 +21,7 @@ import java.util.logging.Handler;
 public class GetSdcardActivity extends Activity {
     private ListView listView;
     private Context context;
-    private File pathOld=null,pathNew=null;
+    private File pathNew=null;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sdcard_list);
@@ -168,9 +168,12 @@ public class GetSdcardActivity extends Activity {
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    String strName=nameE.getText().toString().trim();
+                    if (strName==null||strName.length()==0){
+                        strName="新建文件夹";
+                    }
                     FilePathList fileAdatper= (FilePathList) listView.getAdapter();
-                    fileAdatper.addMkdir( nameE.getText().toString().trim());
+                    fileAdatper.addMkdir(strName);
                     dialog.dismiss();
                 }
             });

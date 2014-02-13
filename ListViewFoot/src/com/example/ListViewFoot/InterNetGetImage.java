@@ -8,10 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -19,6 +16,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import com.example.ListViewFoot.util.CatchImage;
 
 import java.util.List;
@@ -145,5 +143,18 @@ public class InterNetGetImage extends Activity {
             relativeLayout.setVisibility(View.VISIBLE);
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            if (webView.canGoBack()){
+                webView.goBack();
+                return false;
+            }else{
+                Toast.makeText(InterNetGetImage.this,"继续会退出？",0).show();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

@@ -13,10 +13,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.*;
 import com.example.ListViewFoot.util.CatchImage;
 
 import java.util.List;
@@ -25,9 +22,14 @@ import java.util.List;
  * Created by xff on 14-2-13.
  */
 public class InterNetGetImage extends Activity {
+    private  String[] URLS = new String[]{
+            "wap.baidu.com","www.03jjj.com","wap.so.com","www.google.com",
+            "http://wap.baidu.com","http://www.03jjj.com","http://wap.so.com","http://www.google.com"
+    };
     private RelativeLayout relativeLayout;
     private Button buttonOk;
-    private EditText urlE,saveUrlE;
+    private EditText saveUrlE;
+    private AutoCompleteTextView urlE;
     private WebView webView;
     private  CatchImage cm = new CatchImage();
     private    String saveString=null;//保存路径值
@@ -36,14 +38,14 @@ public class InterNetGetImage extends Activity {
         setContentView(R.layout.image_get_activity);
         relativeLayout= (RelativeLayout) findViewById(R.id.setting);
         buttonOk= (Button) findViewById(R.id.ok);
-        urlE= (EditText) findViewById(R.id.set_url);
+        urlE= (AutoCompleteTextView) findViewById(R.id.set_url);
         webView= (WebView) findViewById(R.id.webView);
         saveUrlE= (EditText) findViewById(R.id.set_saveurl);
         saveUrlE.setInputType(InputType.TYPE_NULL);
         saveUrlE.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction()==MotionEvent.ACTION_UP){
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     Intent intent = new Intent(InterNetGetImage.this, GetSdcardActivity.class);
                     startActivityForResult(intent, 101);//requestCode 不能填RESULT_OK
                 }
@@ -51,7 +53,10 @@ public class InterNetGetImage extends Activity {
                 return false;
             }
         });
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, URLS);
 
+        urlE.setAdapter(adapter);
         webView.addJavascriptInterface(new InJavaScriptLocalObj(), "local_obj");
         webView.setWebViewClient(new MyWebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
@@ -75,7 +80,9 @@ public class InterNetGetImage extends Activity {
                 }
                  //webView.loadUrl("http://image.baidu.com/");
                  // webView.loadUrl("http://www.03jjj.com");
-                  webView.loadUrl(url);
+                if (url.startsWith("http://"))    webView.loadUrl(url);
+                else
+                  webView.loadUrl("http://"+url);
 
                 //获得html文本内容
 
@@ -140,7 +147,12 @@ public class InterNetGetImage extends Activity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if (item.getItemId()==0){
-            relativeLayout.setVisibility(View.VISIBLE);
+            if( relativeLayout.getVisibility()==View.GONE){
+                relativeLayout.setVisibility(View.VISIBLE);
+            }else {
+                relativeLayout.setVisibility(View.GONE);
+            }
+
         }
         return super.onMenuItemSelected(featureId, item);
     }

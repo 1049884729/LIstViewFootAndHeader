@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:id="@+id/setting"
+            android:visibility="gone">
+        <TextView android:layout_width="wrap_content" android:layout_height="40dp"
+                  android:gravity="center_vertical"
+                android:text="地址："
+
+
+                android:id="@+id/tip_url"/>
+        <EditText android:layout_width="match_parent" android:layout_height="wrap_content"
+               android:id="@+id/set_url"
+               android:inputType="textUri"
+               android:text="http://"
+               android:layout_alignBottom="@id/tip_url"
+                android:layout_toRightOf="@id/tip_url"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="40dp"
+                  android:text="保存路径："
+                  android:gravity="center_vertical"
+                  android:layout_centerVertical="true"
+                  android:layout_below="@id/tip_url"
+
+                  android:id="@+id/tip_saveurl"/>
+        <EditText android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:id="@+id/set_saveurl"
+                  android:layout_below="@id/set_url"
+                  android:inputType="none"
+                  android:layout_alignBottom="@id/tip_saveurl"
+                  android:layout_toRightOf="@id/tip_saveurl"/>
+        <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_below="@id/set_saveurl"
+                android:id="@+id/ok"
+                android:text="确认"
+                android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+<WebView android:layout_width="match_parent" android:layout_height="match_parent"
+        android:id="@+id/webView"></WebView>
+</LinearLayout>

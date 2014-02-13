@@ -1,15 +1,14 @@
 package com.example.ListViewFoot;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.*;
+import android.widget.Button;
+import android.widget.TextView;
 import com.example.ListViewFoot.sercices.StartAppServer;
 
 /**
@@ -23,6 +22,14 @@ public class TwoActivity extends Activity {
         if (Build.VERSION.SDK_INT>10) {//版本2.33以下不支持ActionBar，所以区别对待
             ActionBar bar = getActionBar();
         }
+        Button iamge_get= (Button) findViewById(R.id.image_get);
+        iamge_get.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+             Intent intent=new Intent(TwoActivity.this,InterNetGetImage.class);
+                startActivity(intent);
+            }
+        });
     }
 
     //private long currentTime=0;
@@ -49,7 +56,14 @@ public class TwoActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         if (Build.VERSION.SDK_INT>10) {
+
             menu.add(0, 0, 0, "exit").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+ menu.add(0, 1, 1, "exit1").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+ menu.add(0, 2, 2, "exit2").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+ menu.add(1, 3, 3, "exit3").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+ menu.add(1, 4, 4, "exit4").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+ menu.add(1, 5, 5, "exit5").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
         }else{
             menu.add(0, 0, 0, "exit");
         }

@@ -19,6 +19,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <service android:name=".StartAppServer"/>
+        <service android:name=".sercices.StartAppServer"/>
+        <service android:name=".sercices.BackRunningAlwaysService"/>
     </application>
 </manifest>

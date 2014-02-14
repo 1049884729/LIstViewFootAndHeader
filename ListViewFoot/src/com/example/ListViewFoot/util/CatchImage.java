@@ -1,6 +1,7 @@
 package com.example.ListViewFoot.util;
 
-import android.net.Uri;
+import android.content.Context;
+import com.example.ListViewFoot.databases.SqliteDatabases;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,6 +18,15 @@ import java.util.regex.Pattern;
  */
 public class CatchImage {
 
+    private Context context;
+    private SqliteDatabases jdbc;
+
+    public CatchImage(Context context,SqliteDatabases jdbc) {
+        this.context = context;
+
+        this.jdbc=jdbc;
+    }
+
     // 地址
   //  private static final String URL = "http://www.csdn.net";
     // 编码
@@ -27,7 +37,7 @@ public class CatchImage {
     private static final String IMGSRC_REG = "http:\"?(.*?)(\"|>|\\s+)";
 
 
-    public  void dealDown(String url,String savepath) throws Exception {
+    public  void dealDown(String url) throws Exception {
 
         String HTML = getHTML(url);
         //获取图片标签
@@ -35,7 +45,7 @@ public class CatchImage {
         //获取图片src地址
         List<String> imgSrc = getImageSrc(imgUrl);
         //下载图片
-        Download(imgSrc,savepath);
+        //Download(imgSrc,savepath);
     }
 
 
@@ -71,6 +81,7 @@ public class CatchImage {
         List<String> listImgUrl = new ArrayList<String>();
         while (matcher.find()) {
             listImgUrl.add(matcher.group());
+
         }
         return listImgUrl;
     }
@@ -86,7 +97,10 @@ public class CatchImage {
         for (String image : listImageUrl) {
             Matcher matcher = Pattern.compile(IMGSRC_REG).matcher(image);
             while (matcher.find()) {
-                listImgSrc.add(matcher.group().substring(0, matcher.group().length() - 1));
+                String str=matcher.group().substring(0, matcher.group().length() - 1);
+                listImgSrc.add(str);
+                if (str!=null&&(str.endsWith("jpg")||str.endsWith("png")||str.endsWith("gif")||str.endsWith("jpeg")))
+                jdbc.addUrl(SqliteDatabases.TABLE_IMAGEURL,str);
             }
         }
         return listImgSrc;

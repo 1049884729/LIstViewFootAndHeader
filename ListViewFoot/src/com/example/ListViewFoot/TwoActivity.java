@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.Button;
 import android.widget.TextView;
+import com.example.ListViewFoot.databases.SqliteDatabases;
 import com.example.ListViewFoot.sercices.StartAppServer;
 
 /**
@@ -80,6 +81,9 @@ public class TwoActivity extends Activity {
                 Intent intent=new Intent();
                 intent.setClass(TwoActivity.this,StartAppServer.class);
                 stopService(intent);
+                 SqliteDatabases.getInstance(getApplicationContext()).deleteTable(SqliteDatabases.TABLE_IMAGEURL);
+
+                         android.os.Process.killProcess(android.os.Process.myPid());
                 finish();
                 break;
             default:break;

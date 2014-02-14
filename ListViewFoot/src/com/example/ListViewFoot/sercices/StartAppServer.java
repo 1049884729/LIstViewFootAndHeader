@@ -7,17 +7,83 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import com.example.ListViewFoot.databases.SqliteDatabases;
+import com.example.ListViewFoot.databases.UrlBean;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
 
 
 /**
  * Created by xff on 14-2-12.
  */
-public class StartAppServer extends Service {
+public class StartAppServer extends Service implements Runnable{
 
     private boolean isOnCreate=false;//线程耗时时，services执行到startCommend方法，
+
+    private SqliteDatabases jdbc=null;
+    private String savePath=null;
     public IBinder onBind(Intent intent) {
 
         return new MyIBinder();
+    }
+
+    @Override
+    public void run() {
+        jdbc= SqliteDatabases.getInstance(getApplicationContext());
+
+        List<UrlBean> lists=null;
+        while (true){
+            lists=jdbc.selectUrls(SqliteDatabases.TABLE_IMAGEURL);
+            if (lists.size()>0&&savePath!=null){
+
+                Download(lists,savePath);
+
+            }else{
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    /***
+     * 下载图片
+     *
+     * @param listImgSrc
+     */
+    private void Download(List<UrlBean>  listImgSrc,String savePath) {
+        try {
+            int totalSize=listImgSrc.size();
+            File file=null;
+            for (int i=0;i<totalSize;i++ ) {
+                UrlBean bean=listImgSrc.get(i);
+                String url=bean.url;
+                String imageName = url.substring(url.lastIndexOf("/") + 1, url.length());
+                file=new File(savePath+"/"+imageName);
+                if (!file.exists()){
+                URL uri = new URL(url);
+                InputStream in = uri.openStream();
+                FileOutputStream fo = new FileOutputStream(file);
+                byte[] buf = new byte[1024];
+                int length = 0;
+                System.out.println("开始下载:"+i+"url:" + url);
+                while ((length = in.read(buf, 0, buf.length)) != -1) {
+                    fo.write(buf, 0, length);
+                }
+                in.close();
+                fo.close();
+                System.out.println(imageName + "下载完成"+i+":z"+totalSize);
+                }
+                jdbc.update(SqliteDatabases.TABLE_IMAGEURL,bean);
+            }
+        } catch (Exception e) {
+            System.out.println("下载失败");
+        }
     }
     public class  MyIBinder extends Binder {
         public void startIntent(){
@@ -26,12 +92,15 @@ public class StartAppServer extends Service {
             getApplicationContext().sendBroadcast(i);
         }
     }
-
+ private Thread thread=null;
     @Override
     public void onCreate() {
         super.onCreate();
 
         new initThread().start();//初始化耗时任务必须放在线程中，完成后通过广播启动完成初始化的任务
+
+         thread=new Thread(this);
+        thread.start();
     }
 class  initThread extends Thread{
     @Override
@@ -58,7 +127,22 @@ class  initThread extends Thread{
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-             if (isOnCreate)startMainPage();
+
+           if (intent!=null){
+            int flagd=intent.getIntExtra("flag",0);
+            switch (flagd){
+                case 0:
+                    if (isOnCreate)startMainPage();
+                    break;
+                case 1:
+                    savePath=intent.getStringExtra("saveString");
+                    break;
+                default:
+                    break;
+            }
+           }
+
+
         return super.onStartCommand(intent, flags, startId);
 
     }
@@ -66,5 +150,9 @@ class  initThread extends Thread{
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (thread!=null){
+            stopSelf();
+
+        }
     }
 }

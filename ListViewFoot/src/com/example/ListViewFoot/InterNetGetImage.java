@@ -1,9 +1,9 @@
 package com.example.ListViewFoot;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -14,28 +14,33 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
+import com.example.ListViewFoot.databases.SqliteDatabases;
+import com.example.ListViewFoot.sercices.SercicesFlag;
+import com.example.ListViewFoot.sercices.StartAppServer;
 import com.example.ListViewFoot.util.CatchImage;
-
-import java.util.List;
 
 /**
  * Created by xff on 14-2-13.
  */
 public class InterNetGetImage extends Activity {
     private  String[] URLS = new String[]{
-            "wap.baidu.com","www.03jjj.com","wap.so.com","www.google.com",
-            "http://wap.baidu.com","http://www.03jjj.com","http://wap.so.com","http://www.google.com"
+            "wap.baidu.com","www.so.com","www.google.com",
+            "http://wap.baidu.com","http://www.so.com","http://www.google.com"
     };
     private RelativeLayout relativeLayout;
     private Button buttonOk;
     private EditText saveUrlE;
     private AutoCompleteTextView urlE;
     private WebView webView;
-    private  CatchImage cm = new CatchImage();
+    protected Context context;
+    private  CatchImage cm=null;
+
     private    String saveString=null;//保存路径值
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_get_activity);
+        context=InterNetGetImage.this;
+
         relativeLayout= (RelativeLayout) findViewById(R.id.setting);
         buttonOk= (Button) findViewById(R.id.ok);
         urlE= (AutoCompleteTextView) findViewById(R.id.set_url);
@@ -60,8 +65,10 @@ public class InterNetGetImage extends Activity {
         webView.addJavascriptInterface(new InJavaScriptLocalObj(), "local_obj");
         webView.setWebViewClient(new MyWebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
+
         WebSettings set=webView.getSettings();
         set.setJavaScriptEnabled(true);
+        set.setCacheMode(WebSettings.LOAD_NO_CACHE);
         set.setSupportZoom(true);
         set.setBuiltInZoomControls(true);
         set.setDefaultZoom(WebSettings.ZoomDensity.CLOSE);
@@ -74,16 +81,14 @@ public class InterNetGetImage extends Activity {
                     urlE.setHint("不能为空");
                     return;
                 }
-                if(saveString==null||saveString.length()==0){
-                    saveUrlE.setHint("不能为空");
-                    return;
-                }
-                 //webView.loadUrl("http://image.baidu.com/");
-                 // webView.loadUrl("http://www.03jjj.com");
                 if (url.startsWith("http://"))    webView.loadUrl(url);
                 else
                   webView.loadUrl("http://"+url);
-
+                Intent intent=new Intent();
+                intent.putExtra("flag", SercicesFlag.SAVEPATH);
+                intent.putExtra("saveString",saveString);
+                intent.setClass(InterNetGetImage.this,StartAppServer.class);
+                startService(intent);
                 //获得html文本内容
 
                 relativeLayout.setVisibility(View.GONE);
@@ -104,16 +109,21 @@ public class InterNetGetImage extends Activity {
         public void run() {
             super.run();
             try {
-                cm.dealDown(url,saveString);
+                SqliteDatabases databases=SqliteDatabases.getInstance(context);
+                cm = new CatchImage(context,databases);
+                cm.dealDown(url);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-     class MyWebViewClient extends WebViewClient{
+
+
+
+    class MyWebViewClient extends WebViewClient{
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
-           new  ThreadDown(url).start();
+        //   if(saveString!=null&&saveString.length()>0)  new  ThreadDown(url).start();
             return true;
         }
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -121,9 +131,24 @@ public class InterNetGetImage extends Activity {
             super.onPageStarted(view, url, favicon);
         }
         public void onPageFinished(WebView view, String url) {
-            new  ThreadDown(url).start();
+            if(saveString!=null&&saveString.length()>0)   new  ThreadDown(url).start();
             view.loadUrl("javascript:window.local_obj.showSource('<head>'+" +
                     "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+            WebView.HitTestResult g=webView.getHitTestResult();
+            String urlGet=null;
+            try {
+                if (g.getType()==WebView.HitTestResult.IMAGE_TYPE||g.getType()==WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE){
+
+                    urlGet=g.getExtra();
+                   if (urlGet!=null&&(urlGet.endsWith("jpg")||urlGet.endsWith("png")||urlGet.endsWith("gif")||urlGet.endsWith("jpeg"))) SqliteDatabases.getInstance(context).addUrl(SqliteDatabases.TABLE_IMAGEURL,urlGet);
+                }else if(g.getType()==WebView.HitTestResult.SRC_ANCHOR_TYPE){
+                    urlGet=g.getExtra();
+                    if (urlGet!=null) SqliteDatabases.getInstance(context).addUrl(SqliteDatabases.TABLE_WEBURL,urlGet);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             super.onPageFinished(view, url);
         }
     }

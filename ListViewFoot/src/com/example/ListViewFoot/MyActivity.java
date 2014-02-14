@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
+import com.example.ListViewFoot.sercices.SercicesFlag;
 import com.example.ListViewFoot.sercices.StartAppServer;
 
 public class MyActivity extends Activity {
@@ -21,6 +22,7 @@ public class MyActivity extends Activity {
         broadIntent.addAction("entry.to.main.broad");
         registerReceiver(broadcast, broadIntent);
         Intent intent=new Intent();
+        intent.putExtra("flag", SercicesFlag.APP_START);
         intent.setClass(MyActivity.this,StartAppServer.class);
         startService(intent);
         System.out.print(false);

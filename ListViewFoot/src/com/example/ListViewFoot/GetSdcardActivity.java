@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.*;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -22,6 +23,7 @@ public class GetSdcardActivity extends Activity {
     private ListView listView;
     private Context context;
     private File pathNew=null;
+    private  File pathRoot=null;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sdcard_list);
@@ -34,6 +36,8 @@ public class GetSdcardActivity extends Activity {
                 boolean isExitSdcard= Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
                 if (isExitSdcard){
                     pathNew=Environment.getExternalStorageDirectory();
+                    pathRoot=pathNew;
+                    Log.i("path",pathNew.getPath());
                    new  AsyncCheckSdcard().execute(pathNew);
                 }
             }
@@ -43,7 +47,13 @@ public class GetSdcardActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if(i==0){
                  String str= (String) adapterView.getAdapter().getItem(0);
-                    new  AsyncCheckSdcard().execute(new File(backFile(str)));
+                    if (str.equals(pathRoot.getPath())){
+                        Toast.makeText(GetSdcardActivity.this,"已经最上层目录啦！",0).show();
+                        return;
+                    }else {
+                        new  AsyncCheckSdcard().execute(new File(backFile(str)));
+                    }
+
 
                 }else{
                     String str= (String) adapterView.getAdapter().getItem(i);
@@ -60,7 +70,7 @@ public class GetSdcardActivity extends Activity {
         public boolean accept(File pathname) {
 
 
-            return pathname.isFile()||!pathname.isHidden();//过滤隐藏文件和文件，只显示文件夹
+            return pathname.isDirectory()&&!pathname.isHidden();//过滤隐藏文件和文件，只显示文件夹
         }
     };
     android.os.Handler handler=new android.os.Handler(){
@@ -100,14 +110,8 @@ public class GetSdcardActivity extends Activity {
             ArrayList<String> arrayList=new ArrayList<String>();
             arrayList.add(path.getPath());
             for (File str:result){
+                arrayList.add(str.getAbsolutePath());
 
-                try {
-                    if (str.isDirectory()){
-                        arrayList.add(str.getAbsolutePath());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
             return   arrayList;
         }
@@ -227,7 +231,14 @@ public class GetSdcardActivity extends Activity {
         public View getView(int i, View view, ViewGroup viewGroup) {
            view= LayoutInflater.from(context).inflate(R.layout.sdcard_item,null);
             TextView name= (TextView) view.findViewById(R.id.name);
-            name.setText(listStrings.get(i).substring(listStrings.get(i).lastIndexOf("/")+1));
+            if (i==0){
+                if(listStrings.get(i).equals(pathRoot.getPath()))name.setText("Sdcard目录");
+                else name.setText("返回上一层");
+
+            }else{
+                name.setText(listStrings.get(i).substring(listStrings.get(i).lastIndexOf("/")+1));
+
+            }
             return view;
         }
     }

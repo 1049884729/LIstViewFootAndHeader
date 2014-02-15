@@ -12,6 +12,7 @@ import com.example.ListViewFoot.databases.UrlBean;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
@@ -34,7 +35,7 @@ public class StartAppServer extends Service implements Runnable{
     @Override
     public void run() {
         jdbc= SqliteDatabases.getInstance(getApplicationContext());
-
+        jdbc.deleteTable(SqliteDatabases.TABLE_IMAGEURL);
         List<UrlBean> lists=null;
         while (true){
             lists=jdbc.selectUrls(SqliteDatabases.TABLE_IMAGEURL);
@@ -61,26 +62,34 @@ public class StartAppServer extends Service implements Runnable{
             int totalSize=listImgSrc.size();
             File file=null;
             for (int i=0;i<totalSize;i++ ) {
-                UrlBean bean=listImgSrc.get(i);
-                String url=bean.url;
-                String imageName = url.substring(url.lastIndexOf("/") + 1, url.length());
-                file=new File(savePath+"/"+imageName);
-                if (!file.exists()){
-                URL uri = new URL(url);
-                InputStream in = uri.openStream();
-                FileOutputStream fo = new FileOutputStream(file);
-                byte[] buf = new byte[1024];
-                int length = 0;
-                System.out.println("开始下载:"+i+"url:" + url);
-                while ((length = in.read(buf, 0, buf.length)) != -1) {
-                    fo.write(buf, 0, length);
-                }
-                in.close();
-                fo.close();
-                System.out.println(imageName + "下载完成"+i+":z"+totalSize);
+                UrlBean bean= null;
+                try {
+                    bean = listImgSrc.get(i);
+                    String url=bean.url;
+                    String imageName = url.substring(url.lastIndexOf("/") + 1, url.length());
+                    file=new File(savePath+"/"+imageName);
+                    if (!file.exists()){
+                    URL uri = new URL(url);
+                    InputStream in = uri.openStream();
+                    FileOutputStream fo = new FileOutputStream(file);
+                    byte[] buf = new byte[1024];
+                    int length = 0;
+                    System.out.println("开始下载:"+i+"url:" + url);
+                    while ((length = in.read(buf, 0, buf.length)) != -1) {
+                        fo.write(buf, 0, length);
+                    }
+                    in.close();
+                    fo.close();
+                    System.out.println(imageName + "下载完成"+i+":z"+totalSize);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
                 jdbc.update(SqliteDatabases.TABLE_IMAGEURL,bean);
             }
+            System.out.println("开始下载--all over");
+
+
         } catch (Exception e) {
             System.out.println("下载失败");
         }
@@ -136,6 +145,7 @@ class  initThread extends Thread{
                     break;
                 case 1:
                     savePath=intent.getStringExtra("saveString");
+
                     break;
                 default:
                     break;

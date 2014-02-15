@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -38,6 +39,7 @@ public class InterNetGetImage extends Activity {
     private    String saveString=null;//保存路径值
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.image_get_activity);
         context=InterNetGetImage.this;
 
@@ -94,8 +96,22 @@ public class InterNetGetImage extends Activity {
                 relativeLayout.setVisibility(View.GONE);
             }
         });
+        if (savedInstanceState!=null){
+            String url= (String) savedInstanceState.get("url");
+            webView.loadUrl(url);
+        }
     }
-     class InJavaScriptLocalObj {
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle bundle=new Bundle();
+
+        outState.putString("url",webView.getUrl());
+
+    }
+
+    class InJavaScriptLocalObj {
         public void showSource(String html) {
             Log.d("HTML", html);
         }

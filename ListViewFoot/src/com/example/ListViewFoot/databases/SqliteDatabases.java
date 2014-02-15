@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -43,12 +44,15 @@ public class SqliteDatabases extends SQLiteOpenHelper {
 
     public  void addUrl(String tableName,String url){
 
-        SQLiteDatabase db =getWritableDatabase();
-        ContentValues values=new ContentValues();
-        values.put("url",url);
-        values.put("isuse",0);//未使用
-        db.insertOrThrow(tableName,null,values);
-
+        try {
+            SQLiteDatabase db =getWritableDatabase();
+            ContentValues values=new ContentValues();
+            values.put("url",url);
+            values.put("isuse",0);//未使用
+            db.insertOrThrow(tableName,null,values);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -90,9 +94,16 @@ public class SqliteDatabases extends SQLiteOpenHelper {
     public void update(String tableName ,UrlBean bean){
         SQLiteDatabase db=getWritableDatabase();
 
-        db.beginTransaction();
-        db.execSQL("delete from "+tableName +" where id="+bean.id);
-        db.endTransaction();
+        try {
+
+            String sql="delete from "+tableName +" where id="+bean.id;
+          int i=  db.delete(tableName,"id=?",new String[]{bean.id+""});
+            System.out.print("开始下载:"+"删除"+i);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.print("开始下载:"+"删除");
+        }
 
     }
 }

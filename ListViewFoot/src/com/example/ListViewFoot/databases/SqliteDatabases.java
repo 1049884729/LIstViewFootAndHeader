@@ -56,11 +56,35 @@ public class SqliteDatabases extends SQLiteOpenHelper {
 
 
     }
+    public List selectUrlAll(String tableName){
+        SQLiteDatabase db =getReadableDatabase();
 
+        Cursor cursor= db.query(tableName, new String[]{"url", "isuse","id"}, null, null, null, null, null);
+        List list=new ArrayList();
+
+        UrlBean bean=null;
+        try {
+            while (cursor.moveToNext()){
+                bean=new UrlBean();
+                bean.url=cursor.getString(0);
+                bean.isuse=cursor.getInt(1);
+                bean.id=cursor.getInt(2);
+
+                list.add(bean);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally
+        {
+            cursor.close();
+        }
+
+        return list;
+    }
     public List selectUrls(String tableName){
         SQLiteDatabase db =getReadableDatabase();
 
-        Cursor cursor= db.query(tableName, new String[]{"url", "isuse","id"}, "  isuse=? ", new String[]{0+""}, null, null, null);
+        Cursor cursor= db.query(tableName, new String[]{"url", "isuse","id"}, "isuse=0", null, null, null, null);
         List list=new ArrayList();
 
         UrlBean bean=null;
@@ -96,13 +120,15 @@ public class SqliteDatabases extends SQLiteOpenHelper {
 
         try {
 
-            String sql="delete from "+tableName +" where id="+bean.id;
-          int i=  db.delete(tableName,"id=?",new String[]{bean.id+""});
-            System.out.print("开始下载:"+"删除"+i);
+            String sql="update  "+tableName +" set isuse=1 where id="+bean.id;
+
+          db.execSQL(sql);
+
+            System.out.print("开始下载:"+"updateuccess");
 
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.print("开始下载:"+"删除");
+
         }
 
     }

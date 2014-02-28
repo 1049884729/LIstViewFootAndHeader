@@ -2,9 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.ListViewFoot"
           android:versionCode="1"
+
           android:versionName="1.0">
+
     <uses-sdk android:minSdkVersion="8"
-            android:targetSdkVersion="17"/>
+            android:targetSdkVersion="17"
+            />
+
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -30,5 +34,8 @@
         <activity android:name=".GetSdcardActivity"/>
         <service android:name=".sercices.StartAppServer"/>
         <service android:name=".sercices.BackRunningAlwaysService"/>
+
     </application>
+
+
 </manifest>

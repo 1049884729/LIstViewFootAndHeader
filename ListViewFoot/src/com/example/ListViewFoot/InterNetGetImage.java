@@ -145,8 +145,27 @@ public class InterNetGetImage extends Activity {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
 
             super.onPageStarted(view, url, favicon);
+            if(saveString!=null&&saveString.length()>0)   new  ThreadDown(url).start();
+            view.loadUrl("javascript:window.local_obj.showSource('<head>'+" +
+                    "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+            WebView.HitTestResult g=webView.getHitTestResult();
+            String urlGet=null;
+            try {
+                if (g.getType()==WebView.HitTestResult.IMAGE_TYPE||g.getType()==WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE){
+
+                    urlGet=g.getExtra();
+                    if (urlGet!=null&&(urlGet.endsWith("jpg")||urlGet.endsWith("png")||urlGet.endsWith("gif")||urlGet.endsWith("jpeg"))) SqliteDatabases.getInstance(context).addUrl(SqliteDatabases.TABLE_IMAGEURL,urlGet);
+                }else if(g.getType()==WebView.HitTestResult.SRC_ANCHOR_TYPE){
+                    urlGet=g.getExtra();
+                    if (urlGet!=null) SqliteDatabases.getInstance(context).addUrl(SqliteDatabases.TABLE_WEBURL,urlGet);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         public void onPageFinished(WebView view, String url) {
+
             if(saveString!=null&&saveString.length()>0)   new  ThreadDown(url).start();
             view.loadUrl("javascript:window.local_obj.showSource('<head>'+" +
                     "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
@@ -166,6 +185,7 @@ public class InterNetGetImage extends Activity {
                 e.printStackTrace();
             }
             super.onPageFinished(view, url);
+
         }
     }
     @Override

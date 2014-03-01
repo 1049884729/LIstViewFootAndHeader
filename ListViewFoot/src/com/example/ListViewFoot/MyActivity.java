@@ -13,7 +13,7 @@ import com.example.ListViewFoot.sercices.StartAppServer;
 public class MyActivity extends Activity  {
     private EnterToTwoActivtyNotify broadcast;
 
-
+    private  Intent intent;
     /**
      * Called when the activity is first created.
      */
@@ -27,21 +27,21 @@ public class MyActivity extends Activity  {
         broadIntent.addAction("entry.to.main.broad");
         broadIntent.setPriority(222222);
         registerReceiver(broadcast, broadIntent);
-        Intent intent=new Intent();
+         intent=new Intent();
         intent.putExtra("flag", SercicesFlag.APP_START);
 
         intent.setClass(MyActivity.this,StartAppServer.class);
         startService(intent);
         System.out.print(false);
 
-         bindService(intent,conn,Context.BIND_AUTO_CREATE);
+
 
 
     }
 private ServiceToActivtyMethod serviceToActivtyMethod=new ServiceToActivtyMethod() {
     @Override
     public void getActivityMethod() {
-        Toast.makeText(MyActivity.this,"success",0).show();
+
         Intent intent=new Intent();
         intent.setAction("main.activity");
         startActivity(intent);
@@ -54,7 +54,12 @@ private ServiceToActivtyMethod serviceToActivtyMethod=new ServiceToActivtyMethod
     protected void onResume() {
         super.onResume();
         //广播一次注册的问题
-
+        try {
+            bindService(intent,conn,Context.BIND_AUTO_CREATE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            unbindService(conn);
+        }
 
         //bindService(intent,conn, Service.BIND_AUTO_CREATE);
     }

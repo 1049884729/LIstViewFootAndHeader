@@ -1,13 +1,17 @@
 package com.example.ListViewFoot;
 
 
-import android.app.ActionBar;
-import android.app.Activity;
+import android.app.*;
+import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.*;
 import android.widget.Button;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import com.example.ListViewFoot.databases.SqliteDatabases;
 import com.example.ListViewFoot.sercices.StartAppServer;
@@ -20,14 +24,14 @@ public class TwoActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mainpage);
-        if (Build.VERSION.SDK_INT>10) {//版本2.33以下不支持ActionBar，所以区别对待
+        if (Build.VERSION.SDK_INT > 10) {//版本2.33以下不支持ActionBar，所以区别对待
             ActionBar bar = getActionBar();
         }
-        Button iamge_get= (Button) findViewById(R.id.image_get);
+        Button iamge_get = (Button) findViewById(R.id.image_get);
         iamge_get.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-             Intent intent=new Intent(TwoActivity.this,InterNetGetImage.class);
+                Intent intent = new Intent(TwoActivity.this, InterNetGetImage.class);
                 startActivity(intent);
             }
         });
@@ -52,20 +56,19 @@ public class TwoActivity extends Activity {
     }
 
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        if (Build.VERSION.SDK_INT>10) {
+        if (Build.VERSION.SDK_INT > 10) {
 
             menu.add(0, 0, 0, "exit").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
- menu.add(0, 1, 1, "exit1").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
- menu.add(0, 2, 2, "exit2").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
- menu.add(1, 3, 3, "exit3").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
- menu.add(1, 4, 4, "exit4").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
- menu.add(1, 5, 5, "exit5").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            menu.add(0, 1, 1, "普通广播").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            menu.add(0, 2, 2, "进度条广播").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            menu.add(1, 3, 3, "exit3").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            menu.add(1, 4, 4, "exit4").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            menu.add(1, 5, 5, "exit5").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
-        }else{
+        } else {
             menu.add(0, 0, 0, "exit");
         }
 
@@ -73,21 +76,110 @@ public class TwoActivity extends Activity {
     }
 
 
-
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case 0:
-                Intent intent=new Intent();
-                intent.setClass(TwoActivity.this,StartAppServer.class);
+                Intent intent = new Intent();
+                intent.setClass(TwoActivity.this, StartAppServer.class);
                 stopService(intent);
-                 SqliteDatabases.getInstance(getApplicationContext()).deleteTable(SqliteDatabases.TABLE_IMAGEURL);
+                SqliteDatabases.getInstance(getApplicationContext()).deleteTable(SqliteDatabases.TABLE_IMAGEURL);
 
-                         android.os.Process.killProcess(android.os.Process.myPid());
+                android.os.Process.killProcess(android.os.Process.myPid());
                 finish();
                 break;
-            default:break;
+            case 1://自定义广播View的
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                Notification notification = new Notification(R.drawable.wen, "Notifiy test", System.currentTimeMillis());
+                notification.number = 2;
+                notification.defaults = Notification.DEFAULT_ALL;
+                notification.flags = Notification.FLAG_AUTO_CANCEL;
+//                notification.sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                notification.vibrate=new long[]{1000,1000,1000};
+                Intent intent1 = new Intent(TwoActivity.this, MyActivity.class);
+                PendingIntent intent2 = PendingIntent.getActivity(getApplicationContext(), 0, intent1, 0);
+                notification.setLatestEventInfo(getApplicationContext(), "biaoti", "conetnet", intent2);
+                notificationManager.notify(1, notification);
+                break;
+            case 2://含有进度条的广播
+                NotificationManager nfm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                Notification nf = new Notification(R.drawable.wen, "Notifiy test", System.currentTimeMillis());
+                // nf.number=2;
+                //nf.defaults=Notification.DEFAULT_ALL;
+                nf.flags = Notification.FLAG_ONGOING_EVENT;
+//                notification.sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                notification.vibrate=new long[]{1000,1000,1000};
+                Intent inf = new Intent(TwoActivity.this, MyActivity.class);
+                PendingIntent intentnfm = PendingIntent.getActivity(getApplicationContext(), 0, inf, 0);
+                nf.contentView = new RemoteViews(this.getPackageName(), R.layout.notify_layout);
+                nf.contentView.setImageViewResource(R.id.notify_name, android.R.drawable.stat_notify_chat);
+                nf.contentView.setTextViewText(R.id.notify_des, "进度：");
+                nf.contentView.setProgressBar(R.id.notify_pro, 100, 0, false);
+                nf.contentIntent=intentnfm;
+                new MyThreadUpdateNotifyBar(nfm, nf, intentnfm).start();
+                nfm.notify(33, nf);
+
+
+
+                break;
+            default:
+                break;
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    /**
+     * 更新广播进度条中的数值
+     */
+    class MyThreadUpdateNotifyBar extends Thread {
+        NotificationManager nfm;
+        Notification nf;
+        PendingIntent intentnfm;
+
+        MyThreadUpdateNotifyBar(NotificationManager nfm,
+                                Notification nf,
+                                PendingIntent intentnfm) {
+            this.nf = nf;
+            this.nfm = nfm;
+            this.intentnfm = intentnfm;
+
+        }
+
+        private Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if (msg.what == 1) {
+                    nf.contentView.setImageViewResource(R.id.notify_name, android.R.drawable.stat_notify_chat);
+                    nf.contentView.setTextViewText(R.id.notify_des, "进度：");
+                    nf.contentView.setProgressBar(R.id.notify_pro, 100, msg.arg1, false);
+                    nfm.notify(33, nf);
+                } else {
+                    nfm.cancel(33);
+                }
+            }
+        };
+
+        @Override
+        public void run() {
+            super.run();
+            int i = 0;
+
+            while (i < 100) {
+                try {
+                    Thread.sleep(200);
+                    i++;
+                    Message msg = handler.obtainMessage();
+                    msg.arg1 = i;
+                    msg.what = 1;
+                    handler.sendMessage(msg);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            Message msg = handler.obtainMessage();
+            msg.what = 2;
+            handler.sendMessage(msg);
+        }
     }
 }

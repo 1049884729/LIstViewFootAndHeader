@@ -1,24 +1,19 @@
 package com.example.ListViewFoot.appwidgets;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.RemoteViews;
 import com.example.ListViewFoot.R;
-import com.example.ListViewFoot.sercices.BackRunningAlwaysService;
+import com.example.ListViewFoot.sercices.AppWidget_TimeService;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -27,73 +22,28 @@ import java.util.Locale;
  */
 public class AppsWidget_Timer extends AppWidgetProvider {
 
-    private SimpleDateFormat sdf =new SimpleDateFormat("HH:mm:ss \n yyyy-MM-dd \n EEEE", Locale.CHINESE);
 
-    public static String UPDATE_TIME="com.example.listView.app_UPTIME";
-
-    private AppWidgetManager appWidgetManager;
-   private   RemoteViews remoteViews=null;
     public void onReceive(Context context, Intent intent) {
 
             super.onReceive(context, intent);
-        if (UPDATE_TIME.equals(intent.getAction())){
-            //Update app_widgets
-            updateTime(context);
-
-        }
-    }
-    // update Time
-    private void updateTime (Context context){
-        AppWidgetManager appWidgetManager=AppWidgetManager.getInstance(context);
-        ComponentName componentName=new ComponentName(context,AppsWidget_Timer.class);
-        int[] ids=appWidgetManager.getAppWidgetIds(componentName);
-        updateTime(context,appWidgetManager,ids);
-    }
-    private void updateTime(Context context,AppWidgetManager appWidgetManager, final int[] appids){
-        int length=appids.length;
-        if (remoteViews==null){
-         remoteViews=new RemoteViews(context.getPackageName(), R.layout.appwidgets_timer);
-        }
-        // 时间 appWidget 的点击 事件
-        Intent intent=new Intent("main.activity");
-        PendingIntent pendingIntent=PendingIntent.getActivity(context, 0, intent, 0);
-        remoteViews.setOnClickPendingIntent(R.id.timer,pendingIntent);
-        //更新 appWidget 时间
-        try {
-            for(int i=0;i<length;i++){
-                int id=appids[i];
-                 handler.post(new Runnable() {
-                     @Override
-                     public void run() {
-                         Message msg=handler.obtainMessage();
-                         msg.obj=appids;
-                         handler.sendMessage(msg);
-                         handler.postDelayed(this,1000);// 延时 1000 发送消息
-                     }
-                 });
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String action = intent.getAction();
+        Log.i("WeatherWidget", "onReceive action = " + action);
+        if (action.equals("android.intent.action.USER_PRESENT")) {// 用户唤醒设备时启动服务
+            context.startService(new Intent(context, AppWidget_TimeService.class));
+        } else if (action.equals("android.intent.action.BOOT_COMPLETED")) {
+            context.startService(new Intent(context, AppWidget_TimeService.class));
         }
 
     }
-    private Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
 
-            remoteViews.setTextViewText(R.id.timer,sdf.format(System.currentTimeMillis()));
-            appWidgetManager.updateAppWidget((int[]) msg.obj,remoteViews);
-        }
-    };
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-        this.appWidgetManager=appWidgetManager;
-        Log.i("app_widget:","--------onUpdate------------");//添加 appwidget ，执行该方法second
 
-        updateTime(context,appWidgetManager,appWidgetIds);
+        Log.i("app_widget:","--------onUpdate------------");//添加 appwidget ，执行该方法second
+        Intent intent = new Intent(context, AppWidget_TimeService.class);
+        context.startService(intent);
+      //  updateTime(context,appWidgetManager,appWidgetIds);
     }
 
     public AppsWidget_Timer() {
@@ -111,6 +61,8 @@ public class AppsWidget_Timer extends AppWidgetProvider {
     public void onDisabled(Context context) {
         super.onDisabled(context);
         Log.i("app_widget:","--------onDisabled------------");//删除 appwidget ，首先执行该方法second
+        Intent intent = new Intent(context, AppWidget_TimeService.class);
+        context.stopService(intent);
 
 
     }

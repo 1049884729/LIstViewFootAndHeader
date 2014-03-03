@@ -38,7 +38,7 @@
         <activity android:name=".InterNetGetImage" />
         <activity android:name=".GetSdcardActivity"/>
         <service android:name=".sercices.StartAppServer"/>
-        <service android:name=".sercices.BackRunningAlwaysService">
+        <service android:name=".sercices.AppWidget_TimeService">
             <intent-filter>
                 <action android:name="com.example.listview.app_time.server"/>
             </intent-filter>
@@ -73,6 +73,10 @@
                     android:resource="@xml/appwidgets_time"/>
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.USER_PRESENT" />// 用户唤醒设备时，接受这个广播
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+
             </intent-filter>
             <intent-filter>
                 <action android:name="com.example.listView.app_UPTIME" />

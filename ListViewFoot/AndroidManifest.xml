@@ -38,7 +38,8 @@
         <activity android:name=".InterNetGetImage" />
         <activity android:name=".GetSdcardActivity"/>
         <service android:name=".sercices.StartAppServer"/>
-        <service android:name=".sercices.AppWidget_TimeService">
+        <service android:name=".sercices.AppWidget_TimeService"
+                 >
             <intent-filter>
                 <action android:name="com.example.listview.app_time.server"/>
             </intent-filter>

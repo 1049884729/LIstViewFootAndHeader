@@ -15,7 +15,7 @@ import com.example.ListViewFoot.appwidgets.AppsWidget_Timer;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-/**程序一旦安装后，一直在后台默默运行，用于接收推送消息或者进行离线下载
+/**程序用于 更新 appWidget 的时间
  * Created by xff on 14-2-12.
  */
 public class AppWidget_TimeService extends Service implements Runnable{
@@ -75,11 +75,15 @@ public class AppWidget_TimeService extends Service implements Runnable{
         thread.start();
     }
 
+
+
+    int stopFlag=0;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         updateTime();
-        return super.onStartCommand(intent, flags, startId);
-
+        stopFlag= super.onStartCommand(intent, flags, startId);
+        return stopFlag;
     }
 
     @Override
@@ -102,12 +106,25 @@ public class AppWidget_TimeService extends Service implements Runnable{
             updateTime();
         }
     };
+
+    //监听系统时间 变更的问题
     private void registBroadCast(){
         IntentFilter updateIntent=new IntentFilter();
-        updateIntent.addAction("android.intent.action.TIME_TICK");
+      //  updateIntent.addAction("android.intent.action.TIME_TICK");
         updateIntent.addAction("android.intent.action.TIME_SET");
         updateIntent.addAction("android.intent.action.DATE_CHANGED");
         updateIntent.addAction("android.intent.action.TIMEZONE_CHANGED");
         registerReceiver(updateTimeBroadcast,updateIntent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (updateTimeBroadcast!=null){
+            unregisterReceiver(updateTimeBroadcast);
+        }
+        if (stopFlag==Service.START_STICKY){
+            startService(new Intent("com.example.listview.app_time.server"));
+        }
     }
 }

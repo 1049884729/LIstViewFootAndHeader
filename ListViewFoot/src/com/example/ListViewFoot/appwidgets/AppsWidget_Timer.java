@@ -1,6 +1,7 @@
 package com.example.ListViewFoot.appwidgets;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.BroadcastReceiver;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
+ * use by Time_app_widget
  * Created by xff on 14-3-3.
  */
 public class AppsWidget_Timer extends AppWidgetProvider {
@@ -52,18 +54,27 @@ public class AppsWidget_Timer extends AppWidgetProvider {
         if (remoteViews==null){
          remoteViews=new RemoteViews(context.getPackageName(), R.layout.appwidgets_timer);
         }
-        for(int i=0;i<length;i++){
-            int id=appids[i];
-             handler.post(new Runnable() {
-                 @Override
-                 public void run() {
-                     Message msg=handler.obtainMessage();
-                     msg.obj=appids;
-                     handler.sendMessage(msg);
-                     handler.postDelayed(this,1000);
-                 }
-             });
+        // 时间 appWidget 的点击 事件
+        Intent intent=new Intent("main.activity");
+        PendingIntent pendingIntent=PendingIntent.getActivity(context, 0, intent, 0);
+        remoteViews.setOnClickPendingIntent(R.id.timer,pendingIntent);
+        //更新 appWidget 时间
+        try {
+            for(int i=0;i<length;i++){
+                int id=appids[i];
+                 handler.post(new Runnable() {
+                     @Override
+                     public void run() {
+                         Message msg=handler.obtainMessage();
+                         msg.obj=appids;
+                         handler.sendMessage(msg);
+                         handler.postDelayed(this,1000);// 延时 1000 发送消息
+                     }
+                 });
 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }

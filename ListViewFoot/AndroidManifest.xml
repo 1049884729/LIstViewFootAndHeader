@@ -35,7 +35,11 @@
         <activity android:name=".InterNetGetImage" />
         <activity android:name=".GetSdcardActivity"/>
         <service android:name=".sercices.StartAppServer"/>
-        <service android:name=".sercices.BackRunningAlwaysService"/>
+        <service android:name=".sercices.BackRunningAlwaysService">
+            <intent-filter>
+                <action android:name="com.example.listview.app_time.server"/>
+            </intent-filter>
+        </service>
 
         <activity
                 android:name=".UninstallActivity"
@@ -58,6 +62,16 @@
         <receiver android:name=".broadcast.BroadCastOnClick">
             <intent-filter>
                 <action android:name="com.notify.toast"/>
+            </intent-filter>
+        </receiver>
+        <!--appWidget组件 的更新和控制-->
+        <receiver android:name=".appwidgets.AppsWidget_Timer">
+            <meta-data android:name="android.appwidget.provider"
+                    android:resource="@xml/appwidgets_time"/>
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter> <intent-filter>
+                <action android:name="com.example.listView.app_UPTIME" />
             </intent-filter>
         </receiver>
     </application>

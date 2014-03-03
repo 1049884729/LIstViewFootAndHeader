@@ -45,7 +45,7 @@ private ServiceToActivtyMethod serviceToActivtyMethod=new ServiceToActivtyMethod
         Intent intent=new Intent();
         intent.setAction("main.activity");
         startActivity(intent);
-        finish();
+        MyActivity.this. finish();
     }
 };
 

@@ -103,6 +103,7 @@ public class TwoActivity extends Activity {
                 break;
             case 2://含有进度条的广播
                 NotificationManager nfm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
                 Notification nf = new Notification(R.drawable.wen, "Notifiy test", System.currentTimeMillis());
                 // nf.number=2;
                 //nf.defaults=Notification.DEFAULT_ALL;

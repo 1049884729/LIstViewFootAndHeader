@@ -7,8 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
-import com.example.ListViewFoot.MyActivity;
 import com.example.ListViewFoot.R;
+import com.example.ListViewFoot.activity.LoadingActivity;
 
 /**
  * Created by xff on 14-3-1.
@@ -26,7 +26,7 @@ public class PackageRemovedBracd extends BroadcastReceiver {
 
             notification.sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             notification.vibrate=new long[]{1000,1000,1000};
-            Intent intent1=new Intent(context,MyActivity.class);
+            Intent intent1=new Intent(context, LoadingActivity.class);
             PendingIntent intent2=PendingIntent.getActivity(context.getApplicationContext(),0,intent1,0);
             notification.setLatestEventInfo(context.getApplicationContext(),"biaoti",packageName,intent2);
             notificationManager.notify(1,notification);

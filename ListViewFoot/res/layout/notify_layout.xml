@@ -7,14 +7,15 @@
     <ImageView
             android:id="@+id/notify_name"
             android:layout_alignParentTop="true"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            android:layout_width="80dp" android:layout_height="80dp"/>
     <TextView
             android:id="@+id/notify_des"
-            android:layout_below="@id/notify_name"
+            android:layout_toRightOf="@id/notify_name"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 <ProgressBar android:layout_width="fill_parent" android:layout_height="wrap_content"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_below="@id/notify_name"
+     style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_alignBottom="@id/notify_name"
         android:max="100"
+        android:layout_toRightOf="@id/notify_name"
         android:id="@+id/notify_pro"/>
 </RelativeLayout>

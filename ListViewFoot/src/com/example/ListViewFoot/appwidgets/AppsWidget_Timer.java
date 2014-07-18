@@ -1,11 +1,14 @@
 package com.example.ListViewFoot.appwidgets;
 
+import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -22,6 +25,11 @@ import java.util.Locale;
  */
 public class AppsWidget_Timer extends AppWidgetProvider {
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+    }
 
     public void onReceive(Context context, Intent intent) {
 
@@ -38,12 +46,13 @@ public class AppsWidget_Timer extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds);
 
         Log.i("app_widget:","--------onUpdate------------");//添加 appwidget ，执行该方法second
         Intent intent = new Intent(context, AppWidget_TimeService.class);
         context.startService(intent);
       //  updateTime(context,appWidgetManager,appWidgetIds);
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+
     }
 
     public AppsWidget_Timer() {
@@ -71,7 +80,8 @@ public class AppsWidget_Timer extends AppWidgetProvider {
     public void onEnabled(Context context) {
         super.onEnabled(context);
         Log.i("app_widget:","--------onEnabled------------");//添加 appwidget ，首先执行该方法frist
-
+        Intent intent = new Intent(context, AppWidget_TimeService.class);
+        context.startService(intent);
 
     }
 }

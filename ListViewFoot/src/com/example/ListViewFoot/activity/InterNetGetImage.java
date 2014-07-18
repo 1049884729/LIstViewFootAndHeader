@@ -1,10 +1,9 @@
-package com.example.ListViewFoot;
+package com.example.ListViewFoot.activity;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -15,6 +14,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
+import com.example.ListViewFoot.R;
 import com.example.ListViewFoot.databases.SqliteDatabases;
 import com.example.ListViewFoot.sercices.SercicesFlag;
 import com.example.ListViewFoot.sercices.StartAppServer;
@@ -67,7 +67,7 @@ public class InterNetGetImage extends Activity {
         webView.addJavascriptInterface(new InJavaScriptLocalObj(), "local_obj");
         webView.setWebViewClient(new MyWebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
-
+        webView.getSettings().setJavaScriptEnabled(false);
         WebSettings set=webView.getSettings();
         set.setJavaScriptEnabled(true);
         set.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -151,6 +151,7 @@ public class InterNetGetImage extends Activity {
             WebView.HitTestResult g=webView.getHitTestResult();
             String urlGet=null;
             try {
+                if (g!=null){
                 if (g.getType()==WebView.HitTestResult.IMAGE_TYPE||g.getType()==WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE){
 
                     urlGet=g.getExtra();
@@ -159,7 +160,7 @@ public class InterNetGetImage extends Activity {
                     urlGet=g.getExtra();
                     if (urlGet!=null) SqliteDatabases.getInstance(context).addUrl(SqliteDatabases.TABLE_WEBURL,urlGet);
                 }
-
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -172,6 +173,7 @@ public class InterNetGetImage extends Activity {
             WebView.HitTestResult g=webView.getHitTestResult();
             String urlGet=null;
             try {
+                if (g==null)return;
                 if (g.getType()==WebView.HitTestResult.IMAGE_TYPE||g.getType()==WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE){
 
                     urlGet=g.getExtra();

@@ -1,8 +1,9 @@
-package com.example.ListViewFoot;
+package com.example.ListViewFoot.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
+import com.example.ListViewFoot.R;
 
 /**
  * 将 要删除的动作转移到该类中

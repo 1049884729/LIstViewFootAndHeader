@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.ListViewFoot"
           android:versionCode="1"
-
+          android:installLocation="auto"
           android:versionName="1.0">
 
     <uses-sdk android:minSdkVersion="8"
-            android:targetSdkVersion="17"
+            android:targetSdkVersion="19"
             />
 
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY"/>
@@ -16,18 +16,21 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:label="@string/app_name" android:icon="@drawable/ic_launcher"
-                 >
+                 android:name=".GloabAppLication">
 
-        <activity android:name="MyActivity"
+        <activity android:name=".activity.LoadingActivity"
                   android:label="@string/app_name"
-
-                android:launchMode="singleTask">
+                  android:clearTaskOnLaunch="true"
+              android:finishOnTaskLaunch="true"
+              android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+             android:launchMode="singleTop"
+               >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".TwoActivity"
+        <activity android:name=".activity.MainActivity"
                   android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="main.activity"/>
@@ -35,8 +38,8 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".InterNetGetImage" />
-        <activity android:name=".GetSdcardActivity"/>
+        <activity android:name=".activity.InterNetGetImage" />
+        <activity android:name=".activity.GetSdcardActivity"/>
         <service android:name=".sercices.StartAppServer"/>
         <service android:name=".sercices.AppWidget_TimeService"
                  >
@@ -46,7 +49,7 @@
         </service>
 
         <activity
-                android:name=".UninstallActivity"
+                android:name=".activity.UninstallActivity"
                 android:label="@string/app_name"
                 android:theme="@android:style/Theme.Dialog">
             <intent-filter>
@@ -54,6 +57,14 @@
                 <action android:name="android.intent.action.DELETE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="package"  />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ParentActivity"/>
+        <activity android:name=".activity.DrawMenuActivity"/>
+        <activity android:name=".activity.ReadTxtActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <receiver android:name=".broadcast.PackageRemovedBracd" android:label="appRemove"

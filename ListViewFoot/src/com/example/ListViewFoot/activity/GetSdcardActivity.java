@@ -1,4 +1,4 @@
-package com.example.ListViewFoot;
+package com.example.ListViewFoot.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,11 +10,11 @@ import android.os.*;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import com.example.ListViewFoot.R;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.logging.Handler;
 
 /**
  * Created by xff on 14-2-13.

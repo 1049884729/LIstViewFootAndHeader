@@ -4,11 +4,11 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
         >
-    <TextView
+    <ImageView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="Hello World, MyActivity"
-            android:id="@+id/name"
+
+            android:id="@+id/imagebg"
             />
 </LinearLayout>
 

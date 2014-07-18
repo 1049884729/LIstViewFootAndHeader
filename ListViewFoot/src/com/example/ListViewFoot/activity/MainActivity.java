@@ -1,38 +1,70 @@
-package com.example.ListViewFoot;
+package com.example.ListViewFoot.activity;
 
 
 import android.app.*;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.*;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RemoteViews;
-import android.widget.TextView;
+import com.example.ListViewFoot.ParentActivity;
+import com.example.ListViewFoot.R;
 import com.example.ListViewFoot.databases.SqliteDatabases;
 import com.example.ListViewFoot.sercices.StartAppServer;
+import com.example.ListViewFoot.util.DeviceDetailInfo;
+import com.example.ListViewFoot.util.SharePrefrenceUtil;
 
 /**
  * Created by xff on 14-2-12.
  */
-public class TwoActivity extends Activity {
+public class MainActivity extends ListActivity {
 
+
+    private Context context;
+
+    public String[] strings={"网站图片抓取","生成条形码","Drawmenu测试","txt文本阅读"};
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mainpage);
+        context=this;
+
         if (Build.VERSION.SDK_INT > 10) {//版本2.33以下不支持ActionBar，所以区别对待
             ActionBar bar = getActionBar();
         }
-        Button iamge_get = (Button) findViewById(R.id.image_get);
-        iamge_get.setOnClickListener(new View.OnClickListener() {
+        getListView().setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,strings));
+//        Button iamge_get = (Button) findViewById(R.id.image_get);
+//        iamge_get.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(MainActivity.this, InterNetGetImage.class);
+//                startActivity(intent);
+//            }
+//        });
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(TwoActivity.this, InterNetGetImage.class);
-                startActivity(intent);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+                        Intent intent = new Intent(MainActivity.this, InterNetGetImage.class);
+                        startActivity(intent);
+                        break;
+                    case 2:
+                        Intent intentMenu = new Intent(MainActivity.this, DrawMenuActivity.class);
+                        startActivity(intentMenu);
+                        break;
+                    case 3:
+                        Intent intentRead = new Intent(MainActivity.this, ReadTxtActivity.class);
+                        startActivity(intentRead);
+                        break;
+                }
             }
         });
     }
@@ -81,9 +113,10 @@ public class TwoActivity extends Activity {
         switch (item.getItemId()) {
             case 0:
                 Intent intent = new Intent();
-                intent.setClass(TwoActivity.this, StartAppServer.class);
+                intent.setClass(MainActivity.this, StartAppServer.class);
                 stopService(intent);
                 SqliteDatabases.getInstance(getApplicationContext()).deleteTable(SqliteDatabases.TABLE_IMAGEURL);
+                 SharePrefrenceUtil.saveBoolean(SharePrefrenceUtil.CACHE_MANAGER, context, getString(R.string.app_name) + DeviceDetailInfo.getAppVersion(context), false);
 
                 android.os.Process.killProcess(android.os.Process.myPid());
                 finish();
@@ -96,7 +129,7 @@ public class TwoActivity extends Activity {
                 notification.flags = Notification.FLAG_AUTO_CANCEL;
 //                notification.sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 //                notification.vibrate=new long[]{1000,1000,1000};
-                Intent intent1 = new Intent(TwoActivity.this, MyActivity.class);
+                Intent intent1 = new Intent(MainActivity.this, LoadingActivity.class);
                 PendingIntent intent2 = PendingIntent.getActivity(getApplicationContext(), 0, intent1, 0);
                 notification.setLatestEventInfo(getApplicationContext(), "biaoti", "conetnet", intent2);
                 notificationManager.notify(1, notification);
@@ -110,7 +143,7 @@ public class TwoActivity extends Activity {
                 nf.flags = Notification.FLAG_ONGOING_EVENT;
 //                notification.sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 //                notification.vibrate=new long[]{1000,1000,1000};
-                Intent inf = new Intent(TwoActivity.this, MyActivity.class);
+                Intent inf = new Intent(MainActivity.this, LoadingActivity.class);
                 PendingIntent intentnfm = PendingIntent.getActivity(getApplicationContext(), 0, inf, 0);
                 nf.contentView = new RemoteViews(this.getPackageName(), R.layout.notify_layout);
                 nf.contentView.setImageViewResource(R.id.notify_name, android.R.drawable.stat_notify_chat);

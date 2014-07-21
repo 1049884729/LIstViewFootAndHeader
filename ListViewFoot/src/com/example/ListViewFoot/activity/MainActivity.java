@@ -14,9 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.RemoteViews;
-import com.example.ListViewFoot.ParentActivity;
 import com.example.ListViewFoot.R;
 import com.example.ListViewFoot.databases.SqliteDatabases;
 import com.example.ListViewFoot.sercices.StartAppServer;
@@ -61,7 +59,7 @@ public class MainActivity extends ListActivity {
                         startActivity(intentMenu);
                         break;
                     case 3:
-                        Intent intentRead = new Intent(MainActivity.this, ReadTxtActivity.class);
+                        Intent intentRead = new Intent(MainActivity.this, ListTxtPathActivity.class);
                         startActivity(intentRead);
                         break;
                 }

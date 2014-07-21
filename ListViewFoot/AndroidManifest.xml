@@ -61,12 +61,10 @@
         </activity>
         <activity android:name=".ParentActivity"/>
         <activity android:name=".activity.DrawMenuActivity"/>
-        <activity android:name=".activity.ReadTxtActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+        <activity android:name=".activity.ListTxtPathActivity">
+
         </activity>
+        <activity android:name=".activity.ReadContentTxtActivity"/>
         <receiver android:name=".broadcast.PackageRemovedBracd" android:label="appRemove"
                >
             <intent-filter>

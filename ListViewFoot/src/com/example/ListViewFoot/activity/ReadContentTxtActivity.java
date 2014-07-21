@@ -49,10 +49,13 @@ public class ReadContentTxtActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0,1,1,"下一页");
-        menu.add(1,2,1,"上一页");
+        super.onCreateOptionsMenu(menu);
+        menu.add(0,1,0,"下一页");
+        menu.add(0,2,0,"上一页");
 
-        return super.onCreateOptionsMenu(menu);
+
+
+        return true;
     }
 
     @Override
@@ -125,10 +128,14 @@ public class ReadContentTxtActivity extends Activity {
                     int c=0;
                     int start=(page - 1) * sizeRead;
                      br.skip(start);
+                    br.markSupported();
                     while ((c=br.read())!=-1){
                         content+=br.readLine()+"\n";
                         int s=content.getBytes().length;
-                        if (s>sizeRead)break;
+                        if (s>sizeRead){
+
+                            break;
+                        }
                     }
 
                     return content;
